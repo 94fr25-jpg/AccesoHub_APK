@@ -1,0 +1,60 @@
+name: Construir APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+permissions:
+  contents: read
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Crear proyecto Android
+        run: |
+          npx cap add android
+          node scripts/prepare-android.js
+          npx cap sync android
+          node scripts/prepare-android.js
+
+      - name: Compilar APK instalable
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Renombrar APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk AccesoHub-prueba.apk
+
+      - name: Publicar APK para descarga
+        uses: actions/upload-artifact@v4
+        with:
+          name: AccesoHub-APK
+          path: AccesoHub-prueba.apk
+          retention-days: 30
+          if-no-files-found: error
