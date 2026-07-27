@@ -1,0 +1,10 @@
+{
+  "appId": "com.crecegt.accesohub",
+  "appName": "AccesoHub",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#0d1220"
+  }
+}
