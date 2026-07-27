@@ -26,6 +26,9 @@ jobs:
       - name: Añadir plataforma Android
         run: npx cap add android
 
+      - name: Reemplazar iconos de la app
+        run: cp -r android-branding/* android/app/src/main/res/
+
       - name: Configurar Java
         uses: actions/setup-java@v4
         with:
